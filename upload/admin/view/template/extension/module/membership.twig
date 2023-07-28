@@ -1,0 +1,568 @@
+{{ header }}
+{{ column_left }}
+<div id="content">
+    {% if do_oa == "settings" %}
+        <form id="form-layout" action="{{ action }}" method="post" enctype="multipart/form-data">
+            <div class="page-header">
+                <div class="container-fluid">
+                    <div class="pull-right">
+                        <button type="submit" form="form-account" data-toggle="tooltip" title="&nbsp;{{ button_save }}" class="btn btn-primary">
+                            <i class="fa fa-save"></i>
+                            &nbsp;
+                                                                                                                                            						
+                                                                                                                                        
+                                                                                                            
+                                                                                
+                                                    
+                        </button>
+                        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+                            <i class="fa fa-reply"></i>
+                        </a>
+                    </div>
+                    <h1>
+                        {{ heading_title }}
+                    </h1>
+                    <ul class="breadcrumb">
+                        {% for breadcrumb in breadcrumbs %}
+                            <li>
+                                <a href="{{ breadcrumb.href }}">
+                                    {{ breadcrumb.text }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a href="{{ action }}">
+                            <i class="fa fa-wrench"></i>
+                            {{ mm_text_settings }}
+                        </a>
+                    </li>
+                    <li class="">
+                        <a href="{{ action }}&amp;do=fb_config">
+                            <i class="fa fa-cog"></i>
+                            {{ mm_text_positions }}
+                        </a>
+                    </li>
+                    <li class="">
+                        <a href="{{ action }}&amp;do=messages">
+                            <i class="fa fa-puzzle-piece"></i>
+                            {{ mm_text_messages }}
+                        </a>
+                    </li>
+                </ul>
+                {# Success #}
+                {% if mm_success_message is not empty %}
+                    <div class="alert alert-success">
+                        <i class="fa fa-cogs"></i>
+                        {{ mm_success_message }}
+                        <button type="button" class="close" data-dismiss="alert">
+                            &times;
+                                                                                                                                        
+                                                                                                            
+                                                                                
+                                                    
+                        </button>
+                    </div>
+                {% endif %}
+                {# Error #}
+                {% if mm_error_message is not empty %}
+                    <div class="alert alert-danger">
+                        <i class="fa fa-exclamation-circle"></i>
+                        {{ mm_error_message }}
+                        <button type="button" class="close" data-dismiss="alert">
+                            &times;
+                                                                                                                                        
+                                                                                                            
+                                                                                
+                                                    
+                        </button>
+                    </div>
+                {% endif %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <i class="fa fa-plug"></i>
+                            {{ mm_text_api_communication }}
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="well">
+                            <div class="row">
+                                <div class="col-lg-12 mx-auto">
+                                    <div class="card rounded-0 border-0 shadow">
+                                        <div class="card-body p-5">
+                                            <div class="table-responsive">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">
+                                                                #
+                                                                                                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                            
+                                                                                                                                                                                            
+                                                                                                                            
+                                                            </th>
+                                                            <th scope="col">
+                                                                {{ mm_text_name }}
+                                                            </th>
+                                                            <th scope="col">
+                                                                {{ mm_text_amount }}
+                                                            </th>
+                                                            <th scope="col">
+                                                                {{ mm_text_actions }}
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for membership in memberships %}
+                                                            <tr>
+                                                                <th scope="row">
+                                                                    {{ loop.index }}
+                                                                </th>
+                                                                <td>
+                                                                    {{ membership.name }}
+                                                                </td>
+                                                                <td>
+                                                                    {{ membership.amount }}
+                                                                </td>
+                                                                <td>
+                                                                    <!-- Add the Edit and Delete buttons here -->
+                                                                    <button class="btn btn-warning edit-row" data-id="{{ membership.id }}">
+                                                                        <i class="fa fa-pencil"></i>
+                                                                        Edit
+                                                                                                                                                                                                                    
+                                                                                                                                            
+                                                                    </button>
+                                                                    <button class="btn btn-danger delete-row" data-id="{{ membership.id }}">
+                                                                        <i class="fa fa-trash"></i>
+                                                                        Delete
+                                                                                                                                                                                                                    
+                                                                                                                                            
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <!-- Add rows button-->
+                                            <a class="btn btn-primary rounded-0 btn-block" id="insertRow" href="#">
+                                                Add new row
+                                                                                                                                                                                                                                            
+                                                                                                                                                                                            
+                                                                                                                                            
+                                                                                            
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <input type="hidden" name="area" value="settings">
+                        <button type="submit" form="form-account" class="btn btn-primary">
+                            <i class="fa fa-save"></i>
+                            {{ mm_text_save }}
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <script type="text/javascript">
+            $(function () {
+                // Start counting from the third row
+                var counter = 1;
+              
+                $("#insertRow").on("click", function (event) {
+                  event.preventDefault();
+              
+                  var newRow = $("<tr>");
+                  var cols = "";
+              
+                  // Table columns
+                  cols += '<th scrope="row">' + counter + "</th>";
+                  cols +=
+                    '<td><input class="form-control rounded-0" type="text" name="name" placeholder="Membership Name"></td>';
+                  cols +=
+                    '<td><input class="form-control rounded-0" type="text" name="amount" placeholder="Amount to reach"></td>';
+                  cols +=
+                    '<td><button class="btn btn-warning edit-row"><i class="fa fa-pencil"></i> Edit</button> ';
+                  cols +=
+                    '<button class="btn btn-danger delete-row"><i class="fa fa-trash"></i> Delete</button></td>';
+              
+                  // Insert the columns inside a row
+                  newRow.append(cols);
+              
+                  // Insert the row inside a table
+                  $("table").append(newRow);
+              
+                  // Increase counter after each row insertion
+                  counter++;
+                });
+              
+                // Remove row when delete btn is clicked
+                $("table").on("click", ".delete-row", function (event) {
+                  event.preventDefault();
+                  let membershipID = $(this).data("id");
+                  let btn = $(this);
+                  btn.text("Loading...");
+                  $.ajax({
+                    url: "index.php?route=extension/module/membership/removeMembership&user_token={{ user_token }}",
+                    type: "post",
+                    dataType: "json",
+                    data: "membership_id=" + $(this).data("id"),
+                    success: function (json) {
+                      console.log(json.success);
+                      if (json.success) {
+                        console.log($(this));
+                        btn.closest("tr").remove();
+                      }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                      alert(
+                        thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText,
+                      );
+                    },
+                  });
+              
+                  counter -= 1;
+                });
+              
+                // Edit row functionality
+                $("table").on("click", ".edit-row", function (event) {
+                    event.preventDefault();
+                    var row = $(this).closest("tr");
+                    var name = row.find("td:nth-child(2)");
+                    var amount = row.find("td:nth-child(3)");
+                  
+                    let nameValue = name.text().trim();
+                    let amountValue = amount.text().trim();
+                  
+                    // Replace the row text with input fields containing the text
+                    var nameInput = $('<input class="form-control rounded-0" type="text" name="name" placeholder="Membership Name">').val(nameValue);
+                    var amountInput = $('<input class="form-control rounded-0" type="text" name="amount" placeholder="Amount to reach">').val(amountValue);
+                  
+                    row.find("td:nth-child(2)").html(nameInput);
+                    row.find("td:nth-child(3)").html(amountInput);
+                  
+                    // Hide the edit button and show the Save Changes button
+                    row.find(".edit-row").html('<i class="fa fa-check"></i> Save');
+                    row.find(".edit-row").removeClass("btn-warning").addClass("btn-primary");
+                    row.find(".edit-row").removeClass("edit-row").addClass("save-changes");
+                  
+                    // Remove previously attached click event handler for ".save-changes" button
+                    $(".save-changes").off("click");
+                  
+                    $(".save-changes").on("click", function (event) {
+                      event.preventDefault();
+                      console.log(name);
+                      $.ajax({
+                        url: "index.php?route=extension/module/membership/editMembership&user_token={{ user_token }}",
+                        type: "post",
+                        dataType: "json",
+                        data:
+                          "membership_id=" +
+                          $(this).data("id") +
+                          "&name=" +
+                          nameInput.val() +
+                          "&amount=" +
+                          amountInput.val(),
+                        success: function (json) {
+                          if (json.success) {
+                            // Update the row with the new values
+                            name.text(json.name);
+                            amount.text(json.amount);
+                  
+                            // Change back to "Edit" mode
+                            row.find("td:nth-child(2)").html(json.name);
+                            row.find("td:nth-child(3)").html(json.amount);
+                            row.find(".save-changes").html('<i class="fa fa-pencil"></i> Edit');
+                            row.find(".save-changes").removeClass("btn-primary").addClass("btn-warning");
+                            row.find(".save-changes").removeClass("save-changes").addClass("edit-row");
+                          }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                          alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                        },
+                      });
+                    });
+                  });
+                  
+
+              });
+              
+			</script>
+        {% elseif do_oa == "fb_config" %}
+            <div class="page-header">
+                <div class="container-fluid">
+                    <div class="pull-right">
+                        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+                            <i class="fa fa-reply"></i>
+                        </a>
+                    </div>
+                    <h1>
+                        {{ heading_title }}
+                    </h1>
+                    <ul class="breadcrumb">
+                        {% for breadcrumb in breadcrumbs %}
+                            <li>
+                                <a href="{{ breadcrumb.href }}">
+                                    {{ breadcrumb.text }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <ul class="nav nav-tabs">
+                    <li>
+                        <a href="{{ action }}">
+                            <i class="fa fa-wrench"></i>
+                            {{ mm_text_settings }}
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="{{ action }}&amp;do=fb_config">
+                            <i class="fa fa-puzzle-piece"></i>
+                            {{ mm_text_positions }}
+                        </a>
+                    </li>
+                    <li class="">
+                        <a href="{{ action }}&amp;do=messages">
+                            <i class="fa fa-puzzle-piece"></i>
+                            {{ mm_text_messages }}
+                        </a>
+                    </ul>
+                    {# Success #}
+                    {% if mm_success_message is not empty %}
+                        <div class="alert alert-success">
+                            <i class="fa fa-cogs"></i>
+                            {{ mm_success_message }}
+                            <button type="button" class="close" data-dismiss="alert">
+                                &times;
+                                                                                                                                                    
+                                                                                                                        
+                                                                                            
+                                                            
+                            </button>
+                        </div>
+                    {% endif %}
+                    {# Error #}
+                    {% if mm_error_message is not empty %}
+                        <div class="alert alert-danger">
+                            <i class="fa fa-exclamation-circle"></i>
+                            {{ mm_error_message }}
+                        </div>
+                    {% endif %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                <i class="fa fa-plus-square"></i>
+                                {{ mm_text_fb_config }}
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+                        <div class="well" style="padding: 40px;">
+                            <form id="form-layout" action="{{ action }}&amp;do=fb_config" method="post" enctype="multipart/form-data">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label for="input-name" class="control-label">
+                                            {{ mm_text_firebase_api_key }}
+                                        </label>
+                                        <input type="text" class="form-control" id="api_key" name="module_oneall_subdomain" autocomplete="off" value="{{ config.api_key }}">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label for="input-model" class="control-label">
+                                            {{ mm_text_message_to_keep }}
+                                        </label>
+                                        <input type="text" class="form-control" id="message_to_keep" name="message_to_keep" autocomplete="off" value="{{ config.message_to_keep }}">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label for="input-model" class="control-label">
+                                            {{ mm_text_message_promoted }}
+                                        </label>
+                                        <input type="text" class="form-control" id="message_promoted" name="message_promoted" autocomplete="off" value="{{ config.message_promoted }}">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label for="input-model" class="control-label">
+                                            {{ mm_text_message_demoted }}
+                                        </label>
+                                        <input type="text" class="form-control" id="message_demoted" name="message_demoted" autocomplete="off" value="{{ config.message_demoted }}">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label for="input-model" class="control-label">
+                                            {{ mm_text_notification_sent }}
+                                        </label>
+                                        <h1>
+                                            <span class="badge badge-success">
+                                                500/1000
+                                            </span>
+                                        </h1>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div id="module_oneall_api_verify_result"></div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <button type="button" class="btn btn-success" id="module_oneall_api_verify">
+                                            {{ mm_save_config }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    
+                    <script>
+                        $(document).ready(function() {
+                        // Event handler for the "Save" button
+                        $("#module_oneall_api_verify").on("click", function(event) {
+                            event.preventDefault();
+                            
+                            // Get the form data
+                            var formData = {
+                                api: $("#api_key").val(),
+                                message_to_keep: $("#message_to_keep").val(),
+                                message_promoted: $("#message_promoted").val(),
+                                message_demoted: $("#message_demoted").val(),
+
+                                // Add more form fields if needed
+                            };
+                            
+                            // AJAX call to save the data
+                            $.ajax({
+                                url: "index.php?route=extension/module/membership/saveFbConfig&user_token={{ user_token }}",
+                                type: "POST",
+                                dataType: "json",
+                                data: formData,
+                                success: function(response) {
+                                    // Handle the response from the server (if needed)
+                                    // For example, display a success message
+                                    console.log(response); // Log the response for debugging
+                                    alert("Data saved successfully!");
+                                },
+                                error: function(xhr, status, error) {
+                                    // Handle errors (if any)
+                                    alert("An error occurred: " + error);
+                                }
+                            });
+                        });
+                    });
+                    </script>
+                    {% elseif do_oa == "messages" %}
+                        <div class="page-header">
+                            <div class="container-fluid">
+                                <div class="pull-right">
+                                    <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+                                        <i class="fa fa-reply"></i>
+                                    </a>
+                                </div>
+                                <h1>
+                                    {{ heading_title }}
+                                </h1>
+                                <ul class="breadcrumb">
+                                    {% for breadcrumb in breadcrumbs %}
+                                        <li>
+                                            <a href="{{ breadcrumb.href }}">
+                                                {{ breadcrumb.text }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="container-fluid">
+                            <ul class="nav nav-tabs">
+                                <li>
+                                    <a href="{{ action }}">
+                                        <i class="fa fa-wrench"></i>
+                                        {{ mm_text_settings }}
+                                    </a>
+                                </li>
+                                <li class="">
+                                    <a href="{{ action }}&amp;do=fb_config">
+                                        <i class="fa fa-puzzle-piece"></i>
+                                        {{ mm_text_positions }}
+                                    </a>
+                                </li>
+                                <li class="active">
+                                    <a href="{{ action }}&amp;do=messages">
+                                        <i class="fa fa-puzzle-piece"></i>
+                                        {{ mm_text_messages }}
+                                    </a>
+                                </ul>
+                                {# Success #}
+                                {% if mm_success_message is not empty %}
+                                    <div class="alert alert-success">
+                                        <i class="fa fa-cogs"></i>
+                                        {{ mm_success_message }}
+                                        <button type="button" class="close" data-dismiss="alert">
+                                            &times;
+                                                                                                                                                                            
+                                                                                                                                                
+                                                                                                                                
+                                                                                    
+                                        </button>
+                                    </div>
+                                {% endif %}
+                                {# Error #}
+                                {% if mm_error_message is not empty %}
+                                    <div class="alert alert-danger">
+                                        <i class="fa fa-exclamation-circle"></i>
+                                        {{ mm_error_message }}
+                                    </div>
+                                {% endif %}
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">
+                                            <i class="fa fa-plus-square"></i>
+                                            {{ mm_text_add_to_a_position }}
+                                        </h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="well" style="padding: 40px;">
+                                            <form id="form-layout" action="{{ action }}&amp;do=fb_config" method="post" enctype="multipart/form-data">
+                                                welcome
+                                                                                                                                                                
+                                                                                                                                            
+                                                                                            
+                                            </div>
+                                        </div>
+                                        <div class="text-center">
+                                            <input type="hidden" name="area" value="settings">
+                                                <button type="submit" form="form-account" class="btn btn-primary">
+                                                    <i class="fa fa-save"></i>
+                                                    {{ mm_text_save }}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        {{ footer }}
+                        <script type="text/javascript">
+	var oaL10n = {};
+	oaL10n.token =  '{{ user_token }}';
+	oaL10n.working = '{{ mm_text_ajax_working }}';
+</script>
+                        
+<script>console.log({{ _context | json_encode | raw }});</script>
