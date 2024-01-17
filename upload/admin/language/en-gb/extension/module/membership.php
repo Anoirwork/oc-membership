@@ -26,27 +26,36 @@
 //////////////////////////////////////////////////////////////////////
 // Social Login Admin
 //////////////////////////////////////////////////////////////////////
-$_ ['heading_title'] = 'Membership Module';
+$_ ['heading_title'] = 'Membership module';
 $_ ['text_module'] = 'Modules';
 $_ ['text_extension'] = 'Extensions';
 $_ ['mm_success_message'] = 'The Membership settings have successfully been saved!';
-$_ ['mm_text_settings'] = 'Membership Configuration';
+$_ ['mm_text_settings'] = 'Membership configuration';
 $_ ['mm_text_positions'] = 'Firebase configuration';
 $_ ['mm_text_enable'] = 'Enabled';
 $_ ['mm_text_firebase_api_key'] = 'Firebase API Key';
 $_ ['mm_text_message'] = 'Message';
-$_ ['mm_text_notification_sent'] = 'Notification Sent Count';
+$_ ['mm_text_notification_sent'] = 'Notification sent count';
 $_ ['mm_text_add'] = 'Add';
-$_ ['mm_text_messages'] = 'Firebase Notifications Sent';
+$_ ['mm_text_messages'] = 'Firebase notifications sent';
 $_ ['mm_text_fb_config'] = 'Firebase configuration';
 $_ ['mm_text_api_communication'] = 'Membership settings';
 $_ ['mm_text_name'] = 'Name';
 $_ ['mm_text_amount'] = 'Amount';
 $_ ['mm_text_add_membership'] = 'Add membership';
-$_ ['mm_text_save'] = '&nbsp;Save Changes';
+$_ ['mm_text_save'] = '&nbsp;Save changes';
 $_ ['mm_text_api_verify'] = 'Verify API Connection';
 $_ ['mm_text_actions'] = 'Edit/Delete';
-$_ ['mm_text_message_to_keep'] = "Message To Keep Membership";
-$_ ['mm_text_message_promoted'] = "Message Promoted To Next Membership Title";
-$_ ['mm_text_message_demoted'] = "Message Demoted";
-$_ ['mm_save_config'] = "Save Firebase Configuration";
+$_ ['mm_text_message_keep'] = "Message to keep membership";
+$_ ['mm_text_message_promoted'] = "Message promoted to next membership title";
+$_ ['mm_text_message_demoted'] = "Message demoted";
+$_ ['mm_save_config'] = "Save firebase configuration";
+$_ ['mm_text_message_novice'] = "Message to novice";
+$_ ['mm_text_panel_head_messages'] = "Notifications sent";
+$_ ['mm_text_fb_api_key_tooltip'] = "You can have this from firebase 'Project settings' > Cloud Messaging (tab) >  Cloud Messaging API (Legacy) > Token.";
+$_ ['mm_text_fb_settings_legend'] = "Firebase settings";
+$_ ['mm_text_notification_msg_bodies_legends'] = "Notification messages bodies";
+$_ ['mm_text_mini_pts'] = "Minimum points";
+$_ ['mm_text_mini_pts_tooltip'] = "Minimum points amount to reset the expiration date of the last points reward.";
+$_ ['mm_text_duration'] = "Duration";
+$_ ['mm_text_duration_tooltip'] = "Expiration date of the last purchase user made.";

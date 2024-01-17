@@ -1,32 +1,4 @@
 <?php
-/**
-* @package       membership Social Login
-* @copyright     Copyright 2011-2017 http://www.membership.com
-* @license       GNU/GPL 2 or later
-*
-* This program is free software;
-you can redistribute it and/or
-* modify it under the terms of the GNU General Public License
-* as published by the Free Software Foundation;
-either version 2
-* of the License, or ( at your option ) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY;
-without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program;
-if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*
-* The 'GNU General Public License' ( GPL ) is available at
-* http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
-*
-*/
-
 // ////////////////////////////////////////////////////////////////////
 // Admin Panel
 // ////////////////////////////////////////////////////////////////////
@@ -47,16 +19,13 @@ class ControllerExtensionModuleMembership extends Controller {
             $data[ 'memberships' ] = $this->model_extension_module_membership->getMemberships();
         }
         if ( ( $this->request->server[ 'REQUEST_METHOD' ] == 'POST' ) && $this->validate() ) {
+            $data['post'] = $this->request->post;
             $this->model_extension_module_membership->addMembership( $this->request->post );
             $data[ 'memberships' ] = $this->model_extension_module_membership->getMemberships();
             if ( $this->db->getLastId() ) {
-                $this->load->language( 'extension/module/membership' );
-                $data[ 'mm_success_message' ] = $this->language->get( 'mm_text_settings_saved' );
+                 $data[ 'mm_success_message' ] = $this->language->get( 'mm_text_settings_saved' );
             }
         }
-
-        // Done
-
         return $data;
     }
 
@@ -67,13 +36,14 @@ class ControllerExtensionModuleMembership extends Controller {
 
         $this->load->model( 'extension/module/membership' );
         ////////////////////////////////////////////////////////////////////////////////////////
-        // Remove Position
+        // Remove Positon
         ////////////////////////////////////////////////////////////////////////////////////////
         if ( ( $this->request->server[ 'REQUEST_METHOD' ] == 'GET' ) && $this->validate() ) {
             // Add Position
             if ( isset( $this->request->get ) && is_array( $this->request->get ) ) {
                 // Remove this position
                 $data[ 'config' ] = $this->model_extension_module_membership->getConfig();
+                $data[ 'sent_notification_count' ] = $this->model_extension_module_membership->getSentNotificaitonCount();
             }
         }
         ////////////////////////////////////////////////////////////////////////////////////////
@@ -104,7 +74,8 @@ class ControllerExtensionModuleMembership extends Controller {
         ////////////////////////////////////////////////////////////////////////////////////////
 
         if ( ( $this->request->server[ 'REQUEST_METHOD' ] == 'GET' ) && $this->validate() ) {
-
+            $this->load->model( 'extension/module/membership' );
+            $data['messages'] = $this->model_extension_module_membership->getMessages();
         }
 
         // Done
@@ -117,6 +88,7 @@ class ControllerExtensionModuleMembership extends Controller {
     public function index() {
         // Language
         $data = $this->load->language( 'extension/module/membership' );
+        $data['mm_success_message'] = "";
         // What do we need to do?
         $do = ( !empty( $this->request->get[ 'do' ] ) ? $this->request->get[ 'do' ] : 'settings' );
 
@@ -226,13 +198,16 @@ class ControllerExtensionModuleMembership extends Controller {
         );
         ";
         $this->db->query( $sql );
-        $sql = 'CREATE TABLE IF NOT EXISTS `' . DB_PREFIX . "firebase_config` (
-            `id` INT(11) NOT NULL AUTO_INCREMENT,
-            `server_key` TEXT NOT NULL,
-            `sender_id` VARCHAR(255) NOT NULL,
-            PRIMARY KEY (`id`)
-          ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-        ";
+        $sql = 'CREATE TABLE IF NOT EXISTS `' . DB_PREFIX . 'firebase_config` (
+            `id` int(11) NOT NULL,
+            `api_key` text NOT NULL,
+            `message_novice` text NOT NULL,
+            `message_keep` text NOT NULL,
+            `message_promoted` text NOT NULL,
+            `message_demoted` text NOT NULL,
+            `expiration_duration` text NOT NULL,
+            `minimum_points` int(11) NOT NULL
+          ) ENGINE=MyISAM DEFAULT CHARSET=utf8;';
         $this->db->query( $sql );
         $sql = 'CREATE TABLE IF NOT EXISTS `' . DB_PREFIX . "firebase_messages` (
             `id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -244,18 +219,18 @@ class ControllerExtensionModuleMembership extends Controller {
           ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
         ";
         $this->db->query( $sql );
-
-        $this->db->query( 'INSERT INTO ' . DB_PREFIX . "membership (`id`, `name`, `amount`, `created_at`, `updated_at`) VALUES 
-            (NULL, 'Silver',    '1000', current_timestamp(), current_timestamp()),
-            (NULL, 'Gold',      '1500', current_timestamp(), current_timestamp()),
-            (NULL, 'Platinum',  '2000', current_timestamp(), current_timestamp()),
-        " );
-
-        $this->db->query( 'INSERT INTO `' . DB_PREFIX . "firebase_config` (`id`, `api_key`, `message_to_keep`, `message_promoted`, `message_demoted`, `created_at`, `updated_at`) VALUES 
-        (1, 'TOKEN PLACEHOLDER PLEASE REPLACE IT WITH YOURS', 'Hey %s you had just received a reward of %s.to be promoted to the next tier %s you need to earn %s!', 'Congratulation %s ! You have been promoted to %s.', 'Bad news %s! You had been demoted to %s.')
-        ;
-        " );
-
+        $sql = "
+        INSERT INTO `" . DB_PREFIX . "firebase_config` (`id`, `api_key`, `message_novice`, `message_keep`, `message_promoted`, `message_demoted`, `expiration_duration`, `minimum_points`) VALUES
+            (1, 'AAAASpAxHmw:APA91bFz1ecYiCQArlK0ORdrOfppQm7O-jcvASMlTPtzUkn6y6vEW26g0bv-u17VwmhDbFlLTDrihgcL66HrWIuwyMJBBFwZFQbrLF7UuiVlJA-jam5VYoWUIsW7YpOhgtvq2NwL2sQQ', 
+            'Hey %s you had just received a reward of %s, you have a total of %s. To be promoted to the next tier %s you need to earn %s!', 
+            'Hey %s you had just received a reward of %s, you have a total of %s. To keep your current memebership you need to spend %s before %s!', 
+            'Congratulation %s ! You have been promoted to %s.',
+            'Bad news %s ! You have been demoted to %s.',
+            '3 Months',
+            700
+        );
+        ";
+        $this->db->query( $sql );
     }
 
     // UnInstallation Script
@@ -274,29 +249,8 @@ class ControllerExtensionModuleMembership extends Controller {
             $sql = 'DROP TABLE IF EXISTS `' . DB_PREFIX . 'firebase_config`;';
             $this->db->query( $sql );
         }
-
-        foreach ( $this->getEvents() as $code => $event ) {
-            $this->model_setting_event->deleteEvent( $code );
-        }
     }
 
-    /**
-    * Returns events configuration list used by the module
-    *
-    * @return array
-    */
-
-    private function getEvents() {
-        $events = [
-            // update data
-            'membership_view_before' => [
-                'trigger' => 'catalog/view/*/before',
-                'action' => 'extension/module/membership/twig'
-            ]
-        ];
-
-        return $events;
-    }
 
     public function removeMembership() {
         $json = array();
@@ -346,32 +300,26 @@ class ControllerExtensionModuleMembership extends Controller {
     public function send_notification( $title, $body, $customer, $fb_config ) {
         $this->load->model( 'extension/module/membership' );
 
-        // Replace these with your Firebase configuration
         $serverKey = $fb_config[ 'api_key' ];
 
-        // The notification payload
         $notification = [
             'title' => $title,
             'body' => $body,
         ];
-
-        // Prepare the message data
+        
         $messageData = [
             'to' => $customer[ 'token' ],
             'notification' => $notification,
             'priority' => 'high',
         ];
 
-        // Convert the message data to JSON
         $jsonMessage = json_encode( $messageData );
 
-        // Set the headers for the request
         $headers = [
             'Authorization: key=' . $serverKey,
             'Content-Type: application/json',
         ];
 
-        // Send the request to Firebase Cloud Messaging
         $ch = curl_init( 'https://fcm.googleapis.com/fcm/send' );
         curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, 'POST' );
         curl_setopt( $ch, CURLOPT_POSTFIELDS, $jsonMessage );
@@ -380,23 +328,18 @@ class ControllerExtensionModuleMembership extends Controller {
         $response = curl_exec( $ch );
         curl_close( $ch );
 
-        // Handle the response from Firebase
         $data = json_decode( $response, true );
 
-        if ( isset( $data[ 'message_id' ] ) ) {
-            // The message was sent successfully
-            $this->session->data[ 'success' ] = $this->language->get( 'text_success' );
-
+        if ( isset( $data[ 'results' ][0][ 'message_id' ] ) ) {
             $this->load->model( 'extension/module/membership' );
             $this->model_extension_module_membership->addMessage( $body );
+            $this->session->data[ 'success' ] = $this->language->get( 'text_success' );
         } else {
-            // There was an error sending the message
             $this->session->data[ 'error' ] = $this->language->get( 'text_error' );
         }
-
-        // Redirect back to the appropriate page
-        //$this->response->redirect( $this->url->link( 'common/dashboard', 'user_token=' . $this->session->data[ 'user_token' ], true ) );
     }
+
+
     /**
     * process notification
     *
@@ -408,60 +351,158 @@ class ControllerExtensionModuleMembership extends Controller {
     public function process( $customer_id, $newly_points ) {
         $this->load->model( 'extension/module/membership' );
         $this->load->model( 'customer/customer' );
+
+        $fb_configuration = $this->model_extension_module_membership->getConfig();
+        $customer_info = $this->model_customer_customer->getCustomer( $customer_id );
+
+        $points_total = $this->model_extension_module_membership->sumRewardPointCustomer( $customer_id );
+        $points_before_reward = $points_total - $newly_points;
+
+        $memberships = $this->model_extension_module_membership->getMemberships( true );
+        $first_time_notification = $this->model_extension_module_membership->isFirstTimeReward($customer_id);
+        $promotion_membership = null;
+        $current_membership_info = null;
+
+        $customer_full_name = $customer_info[ 'firstname' ] . ' ' . $customer_info[ 'lastname' ];
+
+        if( !$first_time_notification && $points_total < $memberships[0]['amount'] ) {//For novice 
+            $this->send_notification('Membership Update',
+            sprintf(
+                $fb_configuration[ 'message_novice' ],
+                $customer_full_name,
+                $newly_points,
+                $points_total,
+                $memberships[0]['name'],
+                (int) $memberships[0]['amount'] - (int) $points_total
+            ),
+            $customer_info, $fb_configuration);
+            return [];
+        }
+
+        for ( $i = count( $memberships ) - 1;
+        $i >= 0;
+        $i-- ) {
+            if ( $points_total >= $memberships[ $i ][ 'amount' ] ) {
+                $promotion_membership = $memberships[ $i ];
+                break;
+            }
+        }
+
+        for ( $i = count( $memberships ) - 1;
+        $i >= 0;
+        $i-- ) {
+            if ( $points_before_reward >= $memberships[ $i ][ 'amount' ] && (isset($memberships[$i + 1]) && $points_before_reward < $memberships[$i + 1]['amount']) ) {
+                $current_membership_info = $memberships[ $i ];
+                break;
+            }
+        }
+
+        if ( $current_membership_info && $promotion_membership && $current_membership_info[ 'name' ] == $promotion_membership[ 'name' ] ) {
+            $date = $this->model_extension_module_membership->getLastReward( $customer_id );
+            $this->send_notification(
+                'Keep your membership',
+                sprintf(
+                    $fb_configuration[ 'message_keep' ],
+                    $customer_full_name,
+                    $newly_points,
+                    $points_total,
+                    $fb_configuration[ 'minimum_points' ],
+                    date( 'd/m/Y', strtotime( $date . ' + ' . $fb_configuration[ 'expiration_duration' ] ) )
+                ),
+                $customer_info,
+                $fb_configuration
+            );
+        } elseif ( $promotion_membership ) {
+            $this->send_notification(
+                'Congratulations',
+                sprintf(
+                    $fb_configuration[ 'message_promoted' ],
+                    $customer_full_name,
+                    $promotion_membership[ 'name' ]
+                ),
+                $customer_info,
+                $fb_configuration
+            );
+        }
+
+        return [];
+    }
+
+
+    /*public function process( $customer_id, $newly_points ) {
+        $this->load->model( 'extension/module/membership' );
+        $this->load->model( 'customer/customer' );
         $points_total = $this->model_extension_module_membership->sumRewardPointCustomer( $customer_id );
         $points_before_reward = $points_total - $newly_points;
         $memberships = $this->model_extension_module_membership->getMemberships( true );
         $current_membership = '';
-        $membership_name = '';
+        $membership_name_promotion = '';
         $fb_configuration = $this->model_extension_module_membership->getConfig();
         $customer_info = $this->model_customer_customer->getCustomer( $customer_id );
-        $i_promotion = null;
-        $i_current = null;
+        $i_promotion = -1;
+        $i_current = -1;
         $promotion_membership = '';
-        //To keep your current membership %s you need to earn %s points and if you want to be promoted to the next membership you need to spend %s!
-        //Hey %s you had just received a reward of %s. To be promoted to the next tier %s you need to earn %s!
-        if ( ( int ) $points_total < ( int ) $memberships[ 0 ][ 'amount' ] ) {
-            $this->send_notification( 'Membership Update',
-            sprintf( $fb_configuration[ 'message_to_keep' ], $customer_info[ 'firstname' ] . ' ' . $customer_info[ 'lastname' ], $newly_points, $memberships[ 0 ][ 'name' ], ( int ) $memberships[ 0 ][ 'amount' ] - ( int ) $points_total ),
-            $customer_info, $fb_configuration );
-            return;
+        $customer_full_name =  $customer_info[ 'firstname' ] . ' ' . $customer_info[ 'lastname' ];
+        
+        if( $points_total < $memberships[0]['amount'] ) {//For novice 
+            $this->send_notification('Membership Update',
+            sprintf(
+                $fb_configuration[ 'message_novice' ],
+                $customer_full_name,
+                $newly_points,
+                $points_total,
+                $memberships[0]['name'],
+                (int) $memberships[0]['amount'] - (int) $points_total
+            ),
+            $customer_info, $fb_configuration);
+            return [];
         }
-        for ( $i = 0; $i < count( $memberships ) ;
-        $i++ ) {
-
-            if ( $points_total  >= $memberships[ $i ][ 'amount' ] && $points_total <= $memberships[ $i++ ][ 'amount' ] ) {
-                $membership_name = $memberships[ $i ][ 'name' ];
+        
+        for ($i = 0; $i < count($memberships); $i++) {
+            if ($points_total >= $memberships[$i]['amount'] && (isset($memberships[$i + 1]) && $points_total < $memberships[$i + 1]['amount'])) {
+                $membership_name_promotion = $memberships[$i]['name'];
                 $i_promotion = $i;
             }
-            if ( $points_before_reward  >= $memberships[ $i ][ 'amount' ] && $points_before_reward <= $memberships[ $i++ ][ 'amount' ] ) {
-                $current_membership = $memberships[ $i ][ 'name' ];
-                $i_current = $i;
+            if ($points_before_reward >= $memberships[$i]['amount'] && (isset($memberships[$i + 1]) && $points_before_reward < $memberships[$i + 1]['amount'])) {
+                $current_membership = $memberships[$i]['name'];
+                $i_current = $i; 
             }
-
         }
-        if ( $i_promotion != null && isset( $memberships[ $i_promotion ] ) ) {
-            $promotion_membership = $memberships[ $i_promotion ];
+        
+        
+        if($i_promotion != null && isset($memberships[$i_promotion])){
+            $promotion_membership = $memberships[$i_promotion];
         }
-        if ( $i_current != null && isset( $memberships[ $i_current ] ) ) {
-            $current_membership_info = $memberships[ $i_current ];
+        if($i_current != null && isset($memberships[$i_current])){
+            $current_membership_info = $memberships[$i_current];
         }
-
-        if ( $membership_name == $current_membership ) {
-            //for promoting to the next membership
+        
+        if ( $membership_name_promotion == $current_membership ) {//To keep membership
+            
+            $date = $this->model_extension_module_membership->getLastReward($customer_id);
             $this->send_notification( 'Keep your membership',
-            sprintf( $fb_configuration[ 'message_to_keep' ],
-            $memberships[ $i_current ][ 'name' ],
-            ( int )  $points_total,
-            ( int ) $points_total - ( int )$memberships[ $i_current ][ 'amount' ] ),
+                sprintf( $fb_configuration[ 'message_keep' ],
+                $customer_full_name,
+                $newly_points,
+                $points_total,
+                $fb_configuration['minimum_points'],
+                date("d/m/Y", strtotime($this->model_extension_module_membership->getLastReward($customer_id) . ' + ' . $fb_configuration['expiration_duration']))
+             ),
             $customer_info,
             $fb_configuration );
-            return;
+            return [];
         }
-        if ( $membership_name != $current_membership ) {
-            $this->send_notification( 'Congratulations', sprintf( $fb_configuration[ 'message_promoted' ], $customer_info[ 'firstname' ] . ' ' . $customer_info[ 'lastname' ], $membership_name, '123' ), $customer_info, $fb_configuration );
 
-            return;
+        if ( $membership_name_promotion != $current_membership ) {//for promotion
+            $this->send_notification( 'Congratulations', 
+            sprintf( $fb_configuration[ 'message_promoted' ], 
+            $customer_full_name,
+            $membership_name_promotion
+            ), 
+            
+            $customer_info, $fb_configuration ); 
+            return [];
         }
-        return [ sprintf( $fb_configuration[ 'message_promoted' ], $customer_info[ 'firstname' ] . ' ' . $customer_info[ 'lastname' ], $membership_name, ), $customer_info, $fb_configuration ];
-    }
+        return [];
+    }*/
 }
