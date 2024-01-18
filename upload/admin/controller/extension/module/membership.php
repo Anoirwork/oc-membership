@@ -221,7 +221,7 @@ class ControllerExtensionModuleMembership extends Controller
         ";
         $this->db->query($sql);
         $sql = 'CREATE TABLE IF NOT EXISTS `' . DB_PREFIX . 'firebase_config` (
-            `id` int(11) NOT NULL,
+            `id` int(11) NOT NULL AUTO_INCREMENT,
             `api_key` text NOT NULL,
             `message_novice` text NOT NULL,
             `message_keep` text NOT NULL,
