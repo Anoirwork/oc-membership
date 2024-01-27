@@ -228,7 +228,8 @@ class ControllerExtensionModuleMembership extends Controller
             `message_promoted` text NOT NULL,
             `message_demoted` text NOT NULL,
             `expiration_duration` text NOT NULL,
-            `minimum_points` int(11) NOT NULL
+            `minimum_points` int(11) NOT NULL,
+            PRIMARY KEY (`id`)
           ) ENGINE=MyISAM DEFAULT CHARSET=utf8;';
         $this->db->query($sql);
         $sql = 'CREATE TABLE IF NOT EXISTS `' . DB_PREFIX . "firebase_messages` (
