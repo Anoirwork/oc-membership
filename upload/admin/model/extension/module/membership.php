@@ -1,7 +1,7 @@
 <?php
 
 class ModelExtensionModuleMembership extends Model {
-    public function addMembership( $data ) {
+    public function addNewMembership( $data ) {
         $this->db->query( 'INSERT INTO ' . DB_PREFIX . "membership (name, amount) VALUES ('" . trim($this->db->escape( $data[ 'name' ] )) . "', '" . ( float )trim($data[ 'amount' ] ). "')" );
     }
 
