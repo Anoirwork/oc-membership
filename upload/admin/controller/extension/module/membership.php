@@ -22,7 +22,7 @@ class ControllerExtensionModuleMembership extends Controller
         }
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
             $data['post'] = $this->request->post;
-            $this->model_extension_module_membership->addMembership($this->request->post);
+            $this->model_extension_module_membership->addNewMembership($this->request->post);
             $data['memberships'] = $this->model_extension_module_membership->getMemberships();
             if ($this->db->getLastId()) {
                 $data['mm_success_message'] = $this->language->get('mm_text_settings_saved');
