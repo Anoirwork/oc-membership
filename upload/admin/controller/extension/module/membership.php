@@ -150,8 +150,17 @@ class ControllerExtensionModuleMembership extends Controller
         // Add Settings
         $data = array_merge($data, $this->model_setting_setting->getSetting('module_membership'));
 
-        // What to show
-        $do = (!empty($this->request->get['do']) && $this->request->get['do'] == 'fb_config') ? 'fb_config' : ((!empty($this->request->get['do']) && $this->request->get['do'] == 'messages') ? 'messages' : 'settings');
+        $do = (!empty($this->request->get['do']) && $this->request->get['do'] == 'fb_config')
+            ? 'fb_config'
+            : (
+                (!empty($this->request->get['do']) && $this->request->get['do'] == 'messages')
+                ? 'messages'
+                : (
+                    (!empty($this->request->get['do']) && $this->request->get['do'] == 'settings' && !($this->request->server['REQUEST_METHOD'] != 'POST')) 
+                    ? 'settings'
+                    : (($this->request->server['REQUEST_METHOD'] == 'GET') ? 'settings' : '')
+                )
+            );
 
         // Show fb_config
         if ($do == 'fb_config') {
