@@ -2,11 +2,11 @@
 
 class ModelExtensionModuleMembership extends Model {
     public function addNewMembership( $data ) {
-        $this->db->query( 'INSERT INTO ' . DB_PREFIX . "membership (name, amount) VALUES ('" . trim($this->db->escape( $data[ 'name' ] )) . "', '" . ( float )trim($data[ 'amount' ] ). "')" );
+        $this->db->query( 'INSERT INTO ' . DB_PREFIX . "membership (name, amount) VALUES ('" . trim($this->db->escape( $data[ 'name' ] )) . "', '" . ( float )trim($data[ 'amount' ] ). "', '" . ( float )trim($data[ 'discount' ] ). "')" );
     }
 
     public function editMembership( $data ) {
-        $this->db->query( 'UPDATE ' . DB_PREFIX . "membership SET name = '" . trim($this->db->escape( $data[ 'name' ] )) . "', amount = '" . ( float )$data[ 'amount' ] . "', updated_at = NOW() WHERE id = '" . ( int )$data['membership_id'] . "'" );
+        $this->db->query( 'UPDATE ' . DB_PREFIX . "membership SET name = '" . trim($this->db->escape( $data[ 'name' ] )) . "', amount = '" . ( float )$data[ 'amount' ] . "', discount = '" . ( float )$data[ 'discount' ] . "', updated_at = NOW() WHERE id = '" . ( int )$data['membership_id'] . "'" );
     }
 
     public function deleteMembership( $membership_id ) {
@@ -59,7 +59,6 @@ class ModelExtensionModuleMembership extends Model {
         }
         $query = $this->db->query( $sql );
         return $query->row['points'];
-        
     }
 
     public function getSentNotificaitonCount() {
@@ -80,6 +79,6 @@ class ModelExtensionModuleMembership extends Model {
 
     public function isFirstTimeReward($customer_id) {
         $query = $this->db->query("SELECT COUNT(*) as count FROM ext_customer_membership WHERE customer_id = ". $customer_id);
-        return $query['count'] > 0;
+        return $query->row['count'] > 0;
     }
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+    <name>App Version Module</name>
+    <code>module_app_version</code>
+    <version>1.0</version>
+    <author>Trustensia</author>
+    <link>Trustensia.com</link>
+    <file path="admin/controller/sale/order.php">
+        <operation>
+            <search><![CDATA[$json['success'] = $this->language->get('text_reward_added');]]></search>
+            <add position="before"><![CDATA[
+                $this->load->controller('extension/module/membership');
+            $ctr = new ControllerExtensionModuleMembership($this->registry);
+			$json['body'] = $ctr->process($order_info['customer_id'], (int) $order_info['reward']);
+            ]]></add>
+        </operation>
+    </file>
+</modification>

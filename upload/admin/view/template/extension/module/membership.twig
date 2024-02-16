@@ -2,14 +2,13 @@
 {{ column_left }}
 <div id="content">
     {% if do_oa == "settings" %}
-        <form id="form-layout" action="{{ action }}" method="post" enctype="multipart/form-data">
+        <form id="form-layout" action="{{ action }}&do=settings" method="post" enctype="multipart/form-data">
             <div class="page-header">
                 <div class="container-fluid">
                     <div class="pull-right">
                         <button type="submit" form="form-account" data-toggle="tooltip" title="&nbsp;{{ button_save }}" class="btn btn-primary">
                             <i class="fa fa-save"></i>
                             &nbsp;
-                                                    
                         </button>
                         <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
                             <i class="fa fa-reply"></i>
@@ -32,7 +31,7 @@
             <div class="container-fluid">
                 <ul class="nav nav-tabs">
                     <li class="active">
-                        <a href="{{ action }}">
+                        <a href="{{ action }}&amp;do=settings">
                             <i class="fa fa-wrench"></i>
                             {{ mm_text_settings }}
                         </a>
@@ -95,19 +94,18 @@
                                                     <tr>
                                                         <th>
                                                             #
-                                                                                                                    
                                                         </th>
                                                         <th>
-                                                            Membership Name
-                                                                                                                    
+                                                            Membership Name                                  
                                                         </th>
                                                         <th>
                                                             Points Amount to Reach
-                                                                                                                    
+                                                        </th>
+                                                        <th>
+                                                            Discount %
                                                         </th>
                                                         <th>
                                                             Actions
-                                                                                                                    
                                                         </th>
                                                     </tr>
                                                 </thead>
@@ -124,17 +122,16 @@
                                                                 {{ membership.amount }}
                                                             </td>
                                                             <td>
+                                                                {{ membership.discount }}
+                                                            </td>
+                                                            <td>
                                                                 <button class="btn btn-warning edit-row" data-id="{{ membership.id }}">
                                                                     <i class="fa fa-pencil"></i>
                                                                     Edit
-                                                                                                                                                                                            
-                                                                                                                                    
                                                                 </button>
                                                                 <button class="btn btn-danger delete-row" data-id="{{ membership.id }}">
                                                                     <i class="fa fa-trash"></i>
                                                                     Delete
-                                                                                                                                                                                            
-                                                                                                                                    
                                                                 </button>
                                                             </td>
                                                         </tr>
@@ -145,8 +142,6 @@
                                         <!-- Add rows button -->
                                         <a class="btn btn-primary btn-block" id="insertRow" href="#">
                                             Add new row
-                                                                                                                        
-                                                                                    
                                         </a>
                                     </div>
                                 </div>
@@ -180,6 +175,8 @@
                     '<td><input class="form-control rounded-0" type="text" name="name" placeholder="Membership Name"></td>';
                   cols +=
                     '<td><input class="form-control rounded-0" type="text" name="amount" placeholder="Amount to reach"></td>';
+                  cols +=
+                    '<td><input class="form-control rounded-0" type="text" name="discount" placeholder="Discount"></td>';
                   cols +=
                     '<td><button class="btn btn-warning edit-row"><i class="fa fa-pencil"></i> Edit</button> ';
                   cols +=
@@ -229,16 +226,20 @@
                     var row = $(this).closest("tr");
                     var name = row.find("td:nth-child(2)");
                     var amount = row.find("td:nth-child(3)");
+                    var discount = row.find("td:nth-child(4)");
                   
                     let nameValue = name.text().trim();
                     let amountValue = amount.text().trim();
+                    let discountValue = discount.text().trim();
                   
                     // Replace the row text with input fields containing the text
                     var nameInput = $('<input class="form-control rounded-0" type="text" name="name" placeholder="Membership Name">').val(nameValue);
                     var amountInput = $('<input class="form-control rounded-0" type="text" name="amount" placeholder="Amount to reach">').val(amountValue);
+                    var discountInput = $('<input class="form-control rounded-0" type="text" name="discount" placeholder="Amount to reach">').val(discountValue);
                   
                     row.find("td:nth-child(2)").html(nameInput);
                     row.find("td:nth-child(3)").html(amountInput);
+                    row.find("td:nth-child(4)").html(discountInput);
                   
                     // Hide the edit button and show the Save Changes button
                     row.find(".edit-row").html('<i class="fa fa-check"></i> Save');
@@ -261,16 +262,20 @@
                           "&name=" +
                           nameInput.val() +
                           "&amount=" +
-                          amountInput.val(),
+                          amountInput.val() +
+                          "&discount=" +
+                          discountInput.val(),
                         success: function (json) {
                           if (json.success) {
                             // Update the row with the new values
                             name.text(json.name);
                             amount.text(json.amount);
+                            discount.text(json.discount);
                   
                             // Change back to "Edit" mode
                             row.find("td:nth-child(2)").html(json.name);
                             row.find("td:nth-child(3)").html(json.amount);
+                            row.find("td:nth-child(4)").html(json.discount);
                             row.find(".save-changes").html('<i class="fa fa-pencil"></i> Edit');
                             row.find(".save-changes").removeClass("btn-primary").addClass("btn-warning");
                             row.find(".save-changes").removeClass("save-changes").addClass("edit-row");
@@ -287,7 +292,7 @@
               });
               console.log({{ _context | json_encode | raw }});
 			</script>
-        {% elseif do_oa == "fb_config" %}
+    {% elseif do_oa == "fb_config" %}
             <div class="page-header">
                 <div class="container-fluid">
                     <div class="pull-right">
@@ -309,10 +314,11 @@
                     </ul>
                 </div>
             </div>
+            <form id="form-layout" action="{{ action }}" method="post" enctype="multipart/form-data">
             <div class="container-fluid">
                 <ul class="nav nav-tabs">
                     <li>
-                        <a href="{{ action }}">
+                        <a href="{{ action }}&amp;do=settings">
                             <i class="fa fa-wrench"></i>
                             {{ mm_text_settings }}
                         </a>
@@ -463,6 +469,7 @@
                     </div>
                 </div>
             </div>
+            </form>
         </div>
     </div>
     <script>
@@ -613,7 +620,7 @@
     <div class="container-fluid">
         <ul class="nav nav-tabs">
             <li>
-                <a href="{{ action }}">
+                <a href="{{ action }}&amp;do=settings">
                     <i class="fa fa-wrench"></i>
                     {{ mm_text_settings }}
                 </a>
