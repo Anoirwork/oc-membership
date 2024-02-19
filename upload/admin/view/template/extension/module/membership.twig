@@ -1,8 +1,8 @@
 {{ header }}
 {{ column_left }}
 <div id="content">
-    {% if do_oa == "settings" %}
-        <form id="form-layout" action="{{ action }}&do=settings" method="post" enctype="multipart/form-data">
+    {% if do_oa in ["settings", ""] %}
+        <form id="form-layout" action="{{ action }}" method="post" enctype="multipart/form-data">
             <div class="page-header">
                 <div class="container-fluid">
                     <div class="pull-right">
@@ -67,12 +67,7 @@
                         <i class="fa fa-exclamation-circle"></i>
                         {{ mm_error_message }}
                         <button type="button" class="close" data-dismiss="alert">
-                            &times;             
-                                                                                                                                                                    
-                                                                                                                                        
-                                                                                                            
-                                                                                
-                                                    
+                            &times;
                         </button>
                     </div>
                 {% endif %}
@@ -172,11 +167,11 @@
                   // Table columns
                   cols += '<th scrope="row">' + counter + "</th>";
                   cols +=
-                    '<td><input class="form-control rounded-0" type="text" name="name" placeholder="Membership Name"></td>';
+                    '<td><input class="form-control rounded-0" type="text" name="name[]" placeholder="Membership Name"></td>';
                   cols +=
-                    '<td><input class="form-control rounded-0" type="text" name="amount" placeholder="Amount to reach"></td>';
+                    '<td><input class="form-control rounded-0" type="text" name="amount[]" placeholder="Amount to reach"></td>';
                   cols +=
-                    '<td><input class="form-control rounded-0" type="text" name="discount" placeholder="Discount"></td>';
+                    '<td><input class="form-control rounded-0" type="text" name="discount[]" placeholder="Discount"></td>';
                   cols +=
                     '<td><button class="btn btn-warning edit-row"><i class="fa fa-pencil"></i> Edit</button> ';
                   cols +=
@@ -233,9 +228,9 @@
                     let discountValue = discount.text().trim();
                   
                     // Replace the row text with input fields containing the text
-                    var nameInput = $('<input class="form-control rounded-0" type="text" name="name" placeholder="Membership Name">').val(nameValue);
-                    var amountInput = $('<input class="form-control rounded-0" type="text" name="amount" placeholder="Amount to reach">').val(amountValue);
-                    var discountInput = $('<input class="form-control rounded-0" type="text" name="discount" placeholder="Amount to reach">').val(discountValue);
+                    var nameInput = $('<input class="form-control rounded-0" type="text" name="name[]" placeholder="Membership Name">').val(nameValue);
+                    var amountInput = $('<input class="form-control rounded-0" type="text" name="amount[]" placeholder="Amount to reach">').val(amountValue);
+                    var discountInput = $('<input class="form-control rounded-0" type="text" name="discount[]" placeholder="Amount to reach">').val(discountValue);
                   
                     row.find("td:nth-child(2)").html(nameInput);
                     row.find("td:nth-child(3)").html(amountInput);
@@ -644,11 +639,6 @@
                     {{ mm_success_message }}
                     <button type="button" class="close" data-dismiss="alert">
                         &times;
-                                                                                                                                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                                                                            
-                                                                                                                                                                                        
-                                                                                    
-                                            
                     </button>
                 </div>
             {% endif %}
@@ -671,25 +661,13 @@
                         <thead>
                             <tr>
                                 <th scope="col">
-                                    #
-                                                                                                                                                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                        
-                                                                                                                        
-                                                                    
+                                    #    
                                 </th>
                                 <th scope="col">
-                                    Notification body
-                                                                                                                                                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                        
-                                                                                                                        
-                                                                    
+                                    Notification body   
                                 </th>
                                 <th scope="col">
-                                    Sent at
-                                                                                                                                                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                        
-                                                                                                                        
-                                                                    
+                                    Sent at    
                                 </th>
                             </tr>
                         </thead>

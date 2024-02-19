@@ -7,25 +7,51 @@ class ControllerExtensionModuleMembership extends Controller
 {
     private $error = array();
     // Settings Admin
-    protected function index_settings($data)
-    {
+    protected function index_settings( $data ) {
         // Section
-        $data['do_oa'] = 'settings';
-
-        $this->load->model('extension/module/membership');
+        $data[ 'do_oa' ] = 'settings';
+        
+        $this->load->model( 'extension/module/membership' );
         ////////////////////////////////////////////////////////////////////////////////////////
         // Save Settings
         ////////////////////////////////////////////////////////////////////////////////////////
 
-        if (($this->request->server['REQUEST_METHOD'] == 'GET') && $this->validate()) {
-            $data['memberships'] = $this->model_extension_module_membership->getMemberships();
+        if ( ( $this->request->server[ 'REQUEST_METHOD' ] == 'GET' ) && $this->validate() ) {
+            $data[ 'memberships' ] = $this->model_extension_module_membership->getMemberships();
         }
-        if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-            
-            $this->model_extension_module_membership->addNewMembership($this->request->post);
-            trigger_error(print_r($this->request->post))
-            $this->session->data['success'] = $this->language->get('text_success');
-            $this->response->redirect($this->url->link('extension/module/membership', 'user_token=' . $this->session->data['user_token'], true));
+        if ( ( $this->request->server[ 'REQUEST_METHOD' ] == 'POST' ) && $this->validate() && (isset($this->request->post['area']) && $this->request->post['area'] == 'settings')  ) {
+            //$data['post'] = $this->request->post;
+            //trigger_error(print_r($this->request->post));
+            //$this->model_extension_module_membership->addNewMembership( $this->request->post );
+            $formData = $this->request->post;
+
+            // Get the number of elements in the arrays (assuming they have the same length)
+            $numElements = count($formData['name']);
+
+            // Iterate through each index
+            for ($i = 0; $i < $numElements; $i++) {
+                $name = $formData['name'][$i];
+                $amount = $formData['amount'][$i];
+                $discount = $formData['discount'][$i];
+                if (!empty($name) && !empty($amount) && !empty($discount)) {
+                                    // Process or insert the data as needed
+                                    $this->model_extension_module_membership->addNewMembership(array(
+                                        'name'     => $name,
+                                        'amount'   => $amount,
+                                        'discount' => $discount
+                                    ));
+                                } else {
+                                    // Handle the case where any of the values is empty
+                                    $this->log->write('Warning: Empty values not processed for index ' . $i);
+                                }
+
+                // You can also use $this->log or trigger_error for debugging if needed
+            }
+
+            $data[ 'memberships' ] = $this->model_extension_module_membership->getMemberships();
+            if ( $this->db->getLastId() ) {
+                 $data[ 'mm_success_message' ] = $this->language->get( 'mm_text_settings_saved' );
+            }
         }
         return $data;
     }
@@ -88,55 +114,53 @@ class ControllerExtensionModuleMembership extends Controller
 
     // Display Admin
 
-    public function index()
-    {
+    public function index() {
         // Language
-        $data = $this->load->language('extension/module/membership');
+        $data = $this->load->language( 'extension/module/membership' );
         $data['mm_success_message'] = "";
-        // // What do we need to do?
-        // $do = (!empty($this->request->get['do']) ? $this->request->get['do'] : 'settings');
+        // What do we need to do?
+        $do = ( !empty( $this->request->get[ 'do' ] ) ? $this->request->get[ 'do' ] : 'settings' );
 
         // Page Title
-        $this->document->setTitle($this->language->get('heading_title'));
+        $this->document->setTitle( $this->language->get( 'heading_title' ) );
 
         // Load Models
-        $this->load->model('setting/setting');
-        $this->load->model('design/layout');
+        $this->load->model( 'setting/setting' );
+        $this->load->model( 'design/layout' );
 
         // BreadCrumbs
-        $data['breadcrumbs'] = array(
+        $data[ 'breadcrumbs' ] = array(
             array(
-                'text' => $this->language->get('text_home'),
-                'href' => $this->url->link(
-                    'common/dashboard',
-                    'user_token=' . $this->session->data['user_token'],
-                    true
-                ),
+                'text' => $this->language->get( 'text_home' ),
+                'href' => $this->url->link( 'common/dashboard', 'user_token=' . $this->session->data[ 'user_token' ],
+                true ),
                 'separator' => false
             ),
             array(
-                'text' => $this->language->get('text_extension'),
-                'href' => $this->url->link(
-                    'extension/extension',
-                    'user_token=' . $this->session->data['user_token'],
-                    true
-                ),
+                'text' => $this->language->get( 'text_extension' ),
+                'href' => $this->url->link( 'extension/extension', 'user_token=' . $this->session->data[ 'user_token' ],
+                true ),
                 'separator' => ' :: '
             ),
             array(
-                'text' => $this->language->get('heading_title'),
-                'href' => $this->url->link(
-                    'extension/module/membership',
-                    'user_token=' . $this->session->data['user_token'],
-                    true
-                ),
+                'text' => $this->language->get( 'heading_title' ),
+                'href' => $this->url->link( 'extension/module/membership',
+                'user_token=' . $this->session->data[ 'user_token' ], true ),
                 'separator' => ' :: '
             )
         );
 
-        // Add Settings
-        $data = array_merge($data, $this->model_setting_setting->getSetting('module_membership'));
+        // Buttons
+        $data[ 'action' ] = $this->url->link( 'extension/module/membership',
+        'user_token=' . $this->session->data[ 'user_token' ], true );
+        $data[ 'cancel' ] = $this->url->link( 'extension/module/membership',
+        'user_token=' . $this->session->data[ 'user_token' ], true );
 
+        // Add Settings
+        $data = array_merge( $data, $this->model_setting_setting->getSetting( 'module_membership' ) );
+
+        // What to show
+        //$do = ( !empty( $this->request->get[ 'do' ] ) && $this->request->get[ 'do' ] == 'fb_config' ) ? 'fb_config' : ( ( !empty( $this->request->get[ 'do' ] ) && $this->request->get[ 'do' ] == 'messages' ) ? 'messages' : 'settings' );
         if (!empty($this->request->get['do']) && $this->request->get['do'] == 'fb_config') {
             $do = 'fb_config';
         } elseif (!empty($this->request->get['do']) && $this->request->get['do'] == 'messages') {
@@ -147,49 +171,35 @@ class ControllerExtensionModuleMembership extends Controller
             $do = ($this->request->server['REQUEST_METHOD'] == 'GET') ? 'settings' : '';
         }
 
-        // Buttons
-        $data['action'] = $this->url->link(
-            'extension/module/membership',
-            'user_token=' . $this->session->data['user_token'],
-            true
-        )  ;
-
-        $data['cancel'] = $this->url->link(
-            'extension/module/membership',
-            'user_token=' . $this->session->data['user_token'],
-            true
-        );
-
         // Show fb_config
-        if ($do == 'fb_config') {
-            $data = $this->index_fb_config($data);
+        if ( $do == 'fb_config' ) {
+            $data = $this->index_fb_config( $data );
         }
-        // Show Settings
-        else if ($do == 'settings') {
-            $data = $this->index_settings($data);
-        }
-
         // Show messages
-        else if ($do == 'messages') {
-            $data = $this->index_fb_messages($data);
+        else if ( $do == 'messages' ) {
+            $data = $this->index_fb_messages( $data );
+        }
+        // Show settings
+        else  {
+            $data = $this->index_settings( $data );
         }
 
         // Settings Saved
-        if (isset($this->request->get) && !empty($this->request->get['mm_action']) == 'saved') {
-            $data['mm_success_message'] = $data['mm_text_settings_saved'];
+        if ( isset( $this->request->get ) && !empty( $this->request->get[ 'mm_action' ] ) == 'saved' ) {
+            $data[ 'mm_success_message' ] = $data[ 'mm_text_settings_saved' ];
         }
 
         // Error Message
-        if (!empty($this->error['warning'])) {
-            $data['mm_error_message'] = $this->error['warning'];
+        if ( !empty( $this->error[ 'warning' ] ) ) {
+            $data[ 'mm_error_message' ] = $this->error[ 'warning' ];
         }
 
-        $data['header'] = $this->load->controller('common/header');
-        $data['column_left'] = $this->load->controller('common/column_left');
-        $data['footer'] = $this->load->controller('common/footer');
-        $data['user_token'] = $this->session->data['user_token'];
+        $data[ 'header' ] = $this->load->controller( 'common/header' );
+        $data[ 'column_left' ] = $this->load->controller( 'common/column_left' );
+        $data[ 'footer' ] = $this->load->controller( 'common/footer' );
+        $data[ 'user_token' ] = $this->session->data[ 'user_token' ];
         // Display Page
-        $this->response->setOutput($this->load->view('extension/module/membership', $data));
+        $this->response->setOutput( $this->load->view( 'extension/module/membership', $data ) );
     }
 
     // Validation
