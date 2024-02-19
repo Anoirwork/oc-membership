@@ -23,7 +23,7 @@ class ControllerExtensionModuleMembership extends Controller
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
             
             $this->model_extension_module_membership->addNewMembership($this->request->post);
-            
+            trigger_error(print_r($this->request->post))
             $this->session->data['success'] = $this->language->get('text_success');
             $this->response->redirect($this->url->link('extension/module/membership', 'user_token=' . $this->session->data['user_token'], true));
         }

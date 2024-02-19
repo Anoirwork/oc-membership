@@ -2,7 +2,7 @@
 
 class ModelExtensionModuleMembership extends Model {
     public function addNewMembership( $data ) {
-        $this->db->query( 'INSERT INTO ' . DB_PREFIX . "membership (name, amount) VALUES ('" . trim($this->db->escape( $data[ 'name' ] )) . "', '" . ( float )trim($data[ 'amount' ] ). "', '" . ( float )trim($data[ 'discount' ] ). "')" );
+        $this->db->query( 'INSERT INTO ' . DB_PREFIX . "membership (name, amount, discount) VALUES ('" . trim($this->db->escape( $data[ 'name' ] )) . "', '" . ( float )trim($data[ 'amount' ] ). "', '" . ( float )trim($data[ 'discount' ] ). "')" );
     }
 
     public function editMembership( $data ) {
@@ -14,7 +14,7 @@ class ModelExtensionModuleMembership extends Model {
     }
 
     public function getMembership( $membership_id ) {
-        $query = $this->db->query( 'SELECT * FROM ' . DB_PREFIX . "membership WHERE id = '" . ( int )$membership_id . "' ORDER BY amount ASC" );
+        $query = $this->db->query( 'SELECT * FROM ' . DB_PREFIX . "membership WHERE id = '" . ( int )$membership_id . "'");
         return $query->row;
     }
 

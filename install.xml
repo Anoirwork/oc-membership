@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <modification>
-    <name>App Version Module</name>
-    <code>module_app_version</code>
+    <name>Membership module</name>
+    <code>module_membership</code>
     <version>1.0</version>
     <author>Trustensia</author>
     <link>Trustensia.com</link>
