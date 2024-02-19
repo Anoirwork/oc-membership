@@ -59,3 +59,5 @@ $_ ['mm_text_mini_pts'] = "Minimum points";
 $_ ['mm_text_mini_pts_tooltip'] = "Minimum points amount to reset the expiration date of the last points reward.";
 $_ ['mm_text_duration'] = "Duration";
 $_ ['mm_text_duration_tooltip'] = "Expiration date of the last purchase user made.";
+$_ ['mm_text_expiration_mm'] = "Expiration membership criteria for V.I.P";
+$_ ['mm_text_expiration_tooltip'] = "Expiration criteria of the membership.";

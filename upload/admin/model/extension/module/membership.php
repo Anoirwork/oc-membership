@@ -38,14 +38,13 @@ class ModelExtensionModuleMembership extends Model {
     } 
 
     public function addConfig( $data ) {
-        $this->db->query( 'UPDATE ' . DB_PREFIX . "firebase_config SET api_key = '" . $this->db->escape( $data[ 'api_key' ] ) . "', message_keep = '" . $this->db->escape( $data[ 'message_keep' ] ) . "', message_promoted = '" . $this->db->escape( $data[ 'message_promoted' ] ) . "', message_demoted = '" . $this->db->escape( $data[ 'message_demoted' ] ) . "', expiration_duration = '" . $this->db->escape( $data['expiration_duration'] ) . "', minimum_points = '" . $this->db->escape( $data['minimum_points'] ) . "' WHERE id = 1" );
+        $this->db->query( 'UPDATE ' . DB_PREFIX . "firebase_config SET api_key = '" . $this->db->escape( $data[ 'api_key' ] ) . "', message_keep = '" . $this->db->escape( $data[ 'message_keep' ] ) . "', message_promoted = '" . $this->db->escape( $data[ 'message_promoted' ] ) . "', message_demoted = '" . $this->db->escape( $data[ 'message_demoted' ] ) . "', expiration_duration = '" . $this->db->escape( $data['expiration_duration'] ) . "', minimum_points = '" . $this->db->escape( $data['minimum_points'] ) . "', expiration_criteria = '" . $this->db->escape( $data['expiration_criteria'] ) . "' WHERE id = 1" );
     }
 
     public function getConfig() {
-        $query = $this->db->query( 'SELECT * FROM ' . DB_PREFIX . 'firebase_config where id = 1'  );
+        $query = $this->db->query( 'SELECT * FROM ' . DB_PREFIX . 'firebase_config WHERE id = 1'  );
         return $query->row;
     }
-
 
     public function editConfig($data) {
         $query = $this->db->query( "UPDATE " . DB_PREFIX . "firebase_config SET api_key = '" . $this->db->escape( $data[ 'name' ] ) . "', message = '" . $this->db->escape( $data[ 'name' ] ) . "', WHERE id = 1"  );

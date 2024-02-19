@@ -19,7 +19,7 @@ class ControllerExtensionModuleMembership extends Controller
         if ( ( $this->request->server[ 'REQUEST_METHOD' ] == 'GET' ) && $this->validate() ) {
             $data[ 'memberships' ] = $this->model_extension_module_membership->getMemberships();
         }
-        if ( ( $this->request->server[ 'REQUEST_METHOD' ] == 'POST' ) && $this->validate() && (isset($this->request->post['area']) && $this->request->post['area'] == 'settings')  ) {
+        if ( ( $this->request->server[ 'REQUEST_METHOD' ] == 'POST' ) && $this->validate() && isset($this->request->post['area']) && $this->request->post['area'] == 'settings'  ) {
             //$data['post'] = $this->request->post;
             //trigger_error(print_r($this->request->post));
             //$this->model_extension_module_membership->addNewMembership( $this->request->post );
@@ -77,9 +77,16 @@ class ControllerExtensionModuleMembership extends Controller
         ////////////////////////////////////////////////////////////////////////////////////////
         // Save Settings
         ////////////////////////////////////////////////////////////////////////////////////////
-        if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
+        if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate() && isset($this->request->post['area']) && $this->request->post['area'] == 'fb_config') {
             // Add Position
-
+            $this->request->post['expiration_duration'] = $this->request->post['duration_number'] . ' ' . $this->request->post['duration_unit'];
+            $this->request->post['expiration_criteria'] = $this->request->post['exp_criteria'] . ' ' . $this->request->post['exp_criteria_value'];
+            $this->model_extension_module_membership->addConfig($this->request->post);
+            //trigger_error(print_r($this->request->post));
+            $data[ 'config' ] = $this->model_extension_module_membership->getConfig();
+            if ( $this->db->getLastId() ) {
+                 $data[ 'mm_success_message' ] = $this->language->get( 'mm_text_settings_saved' );
+            }
             // Redirect
 
         }
@@ -247,6 +254,7 @@ class ControllerExtensionModuleMembership extends Controller
             `message_demoted` text NOT NULL,
             `expiration_duration` text NOT NULL,
             `minimum_points` int(11) NOT NULL,
+            `expiration_criteria` text NOT NULL,
             PRIMARY KEY (`id`)
           ) ENGINE=MyISAM DEFAULT CHARSET=utf8;';
         $this->db->query($sql);
@@ -261,14 +269,15 @@ class ControllerExtensionModuleMembership extends Controller
         ";
         $this->db->query($sql);
         $sql = "
-        INSERT INTO `" . DB_PREFIX . "firebase_config` (`id`, `api_key`, `message_novice`, `message_keep`, `message_promoted`, `message_demoted`, `expiration_duration`, `minimum_points`) VALUES
+        INSERT INTO `" . DB_PREFIX . "firebase_config` (`id`, `api_key`, `message_novice`, `message_keep`, `message_promoted`, `message_demoted`, `expiration_duration`, `minimum_points`, `expiration_criteria`) VALUES
             (1, 'AAAASpAxHmw:APA91bFz1ecYiCQArlK0ORdrOfppQm7O-jcvASMlTPtzUkn6y6vEW26g0bv-u17VwmhDbFlLTDrihgcL66HrWIuwyMJBBFwZFQbrLF7UuiVlJA-jam5VYoWUIsW7YpOhgtvq2NwL2sQQ', 
             'Hey %s you had just received a reward of %s, you have a total of %s. To be promoted to the next tier %s you need to earn %s!', 
             'Hey %s you had just received a reward of %s, you have a total of %s. To keep your current memebership you need to spend %s before %s!', 
             'Congratulation %s ! You have been promoted to %s.',
             'Bad news %s ! You have been demoted to %s.',
             '3 Months',
-            700
+            700,
+            'Spend 1000$'
         );
         ";
         $this->db->query($sql);
@@ -406,6 +415,8 @@ class ControllerExtensionModuleMembership extends Controller
         $this->load->model('customer/customer');
 
         $fb_configuration = $this->model_extension_module_membership->getConfig();
+        if($newly_points > $fb_configuration['minimum_points']){// Minimum reward points to make this function continue processing
+        
         $customer_info = $this->model_customer_customer->getCustomer($customer_id);
 
         $points_total = $this->model_extension_module_membership->sumRewardPointCustomer($customer_id);
@@ -487,5 +498,6 @@ class ControllerExtensionModuleMembership extends Controller
             return [];
         }
         return [];
+    }
     }
 }

@@ -309,7 +309,7 @@
                     </ul>
                 </div>
             </div>
-            <form id="form-layout" action="{{ action }}" method="post" enctype="multipart/form-data">
+            {#<form id="form-layout" action="{{ action }}" method="post" enctype="multipart/form-data">#}
             <div class="container-fluid">
                 <ul class="nav nav-tabs">
                     <li>
@@ -357,9 +357,10 @@
                         <div class="panel-body">
                             <div class="tab-content">
                                 <div class="form-horizontal">
-                                    {# <form id="form-layout" class="form-horizontal" action="{{ action }}&amp;do=fb_config" method="post" enctype="multipart/form-data"> #}
+                                     <form id="form-layout" class="form-horizontal" action="{{ action }}&amp;do=fb_config" method="post" enctype="multipart/form-data"> 
                                     {# ---------- #}
-                                        <div class="tab-pane active" id="tab-affiliate"> <fieldset>
+                                        <div class="tab-pane active" id="tab-affiliate"> 
+                                        <fieldset>
                                             <legend>
                                                 {{ mm_text_fb_settings_legend }}
                                             </legend>
@@ -451,6 +452,22 @@
                                     <input type="text" name="minimum_points" value="{{ config.minimum_points }}" placeholder="" id="minimum-pts" class="form-control" />
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-tracking">
+                                    <span data-toggle="tooltip" title="" data-original-title="{{ mm_text_expiration_tooltip }}">
+                                        {{ mm_text_expiration_mm }}
+                                    </span>
+                                </label>
+                                <div class="col-sm-10">
+                                    <div style="display: flex">
+                                        <select name="exp_criteria" id="duration-unit" class="form-control" style="margin-right: 20px">
+                                            <option>Spend</option>
+                                            <option>Date Expiration</option>
+                                        </select>
+                                        <input name="exp_criteria_value" id="duration-number" value="{{ config.expiration_criteria }}" class="form-control"  />
+                                    </div>
+                                </div>
+                            </div>
                         </fieldset>
                     </div>
                     <div class="text-center">
@@ -460,136 +477,14 @@
                                 {{ mm_text_save }}
                             </button>
                         </div>
-                    {# </form> #}
+                     </form> 
                     </div>
                 </div>
             </div>
             </form>
         </div>
     </div>
-    <script>
-        $(function () {
-            // Start counting from the third row
-            var counter = 1;
-          
-            $("#insertRow").on("click", function (event) {
-              event.preventDefault();
-          
-              var newRow = $("<tr>");
-              var cols = "";
-          
-              // Table columns
-              cols += '<th scrope="row">' + counter + "</th>";
-              cols +=
-                '<td><input class="form-control rounded-0" type="text" name="name" placeholder="Membership Name"></td>';
-              cols +=
-                '<td><input class="form-control rounded-0" type="text" name="amount" placeholder="Amount to reach"></td>';
-              cols +=
-                '<td><button class="btn btn-warning edit-row"><i class="fa fa-pencil"></i> Edit</button> ';
-              cols +=
-                '<button class="btn btn-danger delete-row"><i class="fa fa-trash"></i> Delete</button></td>';
-          
-              // Insert the columns inside a row
-              newRow.append(cols);
-          
-              // Insert the row inside a table
-              $("table").append(newRow);
-          
-              // Increase counter after each row insertion
-              counter++;
-            });
-          
-            // Remove row when delete btn is clicked
-            $("table").on("click", ".delete-row", function (event) {
-              event.preventDefault();
-              let membershipID = $(this).data("id");
-              let btn = $(this);
-              btn.text("Loading...");
-              $.ajax({
-                url: "index.php?route=extension/module/membership/removeMembership&user_token={{ user_token }}",
-                type: "post",
-                dataType: "json",
-                data: "membership_id=" + $(this).data("id"),
-                success: function (json) {
-                  console.log(json.success);
-                  if (json.success) {
-                    console.log($(this));
-                    btn.closest("tr").remove();
-                  }
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                  alert(
-                    thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText,
-                  );
-                },
-              });
-          
-              counter -= 1;
-            });
-          
-            // Edit row functionality
-            $("table").on("click", ".edit-row", function (event) {
-                event.preventDefault();
-                var row = $(this).closest("tr");
-                var name = row.find("td:nth-child(2)");
-                var amount = row.find("td:nth-child(3)");
-              
-                let nameValue = name.text().trim();
-                let amountValue = amount.text().trim();
-              
-                // Replace the row text with input fields containing the text
-                var nameInput = $('<input class="form-control rounded-0" type="text" name="name" placeholder="Membership Name">').val(nameValue);
-                var amountInput = $('<input class="form-control rounded-0" type="text" name="amount" placeholder="Amount to reach">').val(amountValue);
-              
-                row.find("td:nth-child(2)").html(nameInput);
-                row.find("td:nth-child(3)").html(amountInput);
-              
-                // Hide the edit button and show the Save Changes button
-                row.find(".edit-row").html('<i class="fa fa-check"></i> Save');
-                row.find(".edit-row").removeClass("btn-warning").addClass("btn-primary");
-                row.find(".edit-row").removeClass("edit-row").addClass("save-changes");
-              
-                // Remove previously attached click event handler for ".save-changes" button
-                $(".save-changes").off("click");
-              
-                $(".save-changes").on("click", function (event) {
-                  event.preventDefault();
-                  console.log(name);
-                  $.ajax({
-                    url: "index.php?route=extension/module/membership/editMembership&user_token={{ user_token }}",
-                    type: "post",
-                    dataType: "json",
-                    data:
-                      "membership_id=" +
-                      $(this).data("id") +
-                      "&name=" +
-                      nameInput.val() +
-                      "&amount=" +
-                      amountInput.val(),
-                    success: function (json) {
-                      if (json.success) {
-                        // Update the row with the new values
-                        name.text(json.name);
-                        amount.text(json.amount);
-              
-                        // Change back to "Edit" mode
-                        row.find("td:nth-child(2)").html(json.name);
-                        row.find("td:nth-child(3)").html(json.amount);
-                        row.find(".save-changes").html('<i class="fa fa-pencil"></i> Edit');
-                        row.find(".save-changes").removeClass("btn-primary").addClass("btn-warning");
-                        row.find(".save-changes").removeClass("save-changes").addClass("edit-row");
-                      }
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                      alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-                    },
-                  });
-                });
-              });
-              
-
-          });
-                    </script>
+   
 {% elseif do_oa == "messages" %}
     <div class="page-header">
         <div class="container-fluid">
