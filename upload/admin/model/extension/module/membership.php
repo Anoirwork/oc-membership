@@ -75,7 +75,7 @@ class ModelExtensionModuleMembership extends Model {
     }
 
     public function updateCustomerMembership($customer_id, $membership_id, $newly_points) {
-        if(!$this->isFirstTimeReward($customer_id)) {
+        if($this->isFirstTimeReward($customer_id)) {
             $this->db->query("UPDATE ext_customer_membership SET membership_id = '" . $this->db->escape( $membership_id ) . "',  total_reward_points = total_reward_points + '" . $this->db->escape( $newly_points ) . "', updated_at = NOW() WHERE customer_id = ".$customer_id);
         }else{
             $this->db->query("INSERT INTO ext_customer_membership (customer_id, membership_id, total_reward_points, created_at, updated_at) VALUES ('" . $customer_id . "', '" . $membership_id . "', '" . $newly_points . "', NOW(), NOW() )");

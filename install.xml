@@ -15,4 +15,13 @@
             ]]></add>
         </operation>
     </file>
+    <file path="admin/controller/sale/order.php">
+        <operation>
+            <search><![CDATA[$json['success'] = $this->language->get('text_reward_removed');]]></search>
+            <add position="before"><![CDATA[
+                $this->load->model('extension/module/membership');
+                $this->model_extension_module_membership->deleteCustomerMembership($order_info['customer_id'], (int) $order_info['reward']);
+            ]]></add>
+        </operation>
+    </file>
 </modification>
