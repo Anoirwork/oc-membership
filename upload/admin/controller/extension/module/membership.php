@@ -7,19 +7,20 @@ class ControllerExtensionModuleMembership extends Controller
 {
     private $error = array();
     // Settings Admin
-    protected function index_settings( $data ) {
+    protected function index_settings($data)
+    {
         // Section
-        $data[ 'do_oa' ] = 'settings';
-        
-        $this->load->model( 'extension/module/membership' );
+        $data['do_oa'] = 'settings';
+
+        $this->load->model('extension/module/membership');
         ////////////////////////////////////////////////////////////////////////////////////////
         // Save Settings
         ////////////////////////////////////////////////////////////////////////////////////////
 
-        if ( ( $this->request->server[ 'REQUEST_METHOD' ] == 'GET' ) && $this->validate() ) {
-            $data[ 'memberships' ] = $this->model_extension_module_membership->getMemberships();
+        if (($this->request->server['REQUEST_METHOD'] == 'GET') && $this->validate()) {
+            $data['memberships'] = $this->model_extension_module_membership->getMemberships();
         }
-        if ( ( $this->request->server[ 'REQUEST_METHOD' ] == 'POST' ) && $this->validate() && isset($this->request->post['area']) && $this->request->post['area'] == 'settings'  ) {
+        if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate() && isset($this->request->post['area']) && $this->request->post['area'] == 'settings') {
             //$data['post'] = $this->request->post;
             //trigger_error(print_r($this->request->post));
             //$this->model_extension_module_membership->addNewMembership( $this->request->post );
@@ -34,23 +35,23 @@ class ControllerExtensionModuleMembership extends Controller
                 $amount = $formData['amount'][$i];
                 $discount = $formData['discount'][$i];
                 if (!empty($name) && !empty($amount) && !empty($discount)) {
-                                    // Process or insert the data as needed
-                                    $this->model_extension_module_membership->addNewMembership(array(
-                                        'name'     => $name,
-                                        'amount'   => $amount,
-                                        'discount' => $discount
-                                    ));
-                                } else {
-                                    // Handle the case where any of the values is empty
-                                    $this->log->write('Warning: Empty values not processed for index ' . $i);
-                                }
+                    // Process or insert the data as needed
+                    $this->model_extension_module_membership->addNewMembership(array(
+                        'name'     => $name,
+                        'amount'   => $amount,
+                        'discount' => $discount
+                    ));
+                } else {
+                    // Handle the case where any of the values is empty
+                    $this->log->write('Warning: Empty values not processed for index ' . $i);
+                }
 
                 // You can also use $this->log or trigger_error for debugging if needed
             }
 
-            $data[ 'memberships' ] = $this->model_extension_module_membership->getMemberships();
-            if ( $this->db->getLastId() ) {
-                 $data[ 'mm_success_message' ] = $this->language->get( 'mm_text_settings_saved' );
+            $data['memberships'] = $this->model_extension_module_membership->getMemberships();
+            if ($this->db->getLastId()) {
+                $data['mm_success_message'] = $this->language->get('mm_text_settings_saved');
             }
         }
         return $data;
@@ -83,9 +84,9 @@ class ControllerExtensionModuleMembership extends Controller
             $this->request->post['expiration_criteria'] = $this->request->post['exp_criteria'] . ' ' . $this->request->post['exp_criteria_value'];
             $this->model_extension_module_membership->addConfig($this->request->post);
             //trigger_error(print_r($this->request->post));
-            $data[ 'config' ] = $this->model_extension_module_membership->getConfig();
-            if ( $this->db->getLastId() ) {
-                 $data[ 'mm_success_message' ] = $this->language->get( 'mm_text_settings_saved' );
+            $data['config'] = $this->model_extension_module_membership->getConfig();
+            if ($this->db->getLastId()) {
+                $data['mm_success_message'] = $this->language->get('mm_text_settings_saved');
             }
             // Redirect
 
@@ -121,50 +122,66 @@ class ControllerExtensionModuleMembership extends Controller
 
     // Display Admin
 
-    public function index() {
+    public function index()
+    {
         // Language
-        $data = $this->load->language( 'extension/module/membership' );
+        $data = $this->load->language('extension/module/membership');
         $data['mm_success_message'] = "";
         // What do we need to do?
-        $do = ( !empty( $this->request->get[ 'do' ] ) ? $this->request->get[ 'do' ] : 'settings' );
+        $do = (!empty($this->request->get['do']) ? $this->request->get['do'] : 'settings');
 
         // Page Title
-        $this->document->setTitle( $this->language->get( 'heading_title' ) );
+        $this->document->setTitle($this->language->get('heading_title'));
 
         // Load Models
-        $this->load->model( 'setting/setting' );
-        $this->load->model( 'design/layout' );
+        $this->load->model('setting/setting');
+        $this->load->model('design/layout');
 
         // BreadCrumbs
-        $data[ 'breadcrumbs' ] = array(
+        $data['breadcrumbs'] = array(
             array(
-                'text' => $this->language->get( 'text_home' ),
-                'href' => $this->url->link( 'common/dashboard', 'user_token=' . $this->session->data[ 'user_token' ],
-                true ),
+                'text' => $this->language->get('text_home'),
+                'href' => $this->url->link(
+                    'common/dashboard',
+                    'user_token=' . $this->session->data['user_token'],
+                    true
+                ),
                 'separator' => false
             ),
             array(
-                'text' => $this->language->get( 'text_extension' ),
-                'href' => $this->url->link( 'extension/extension', 'user_token=' . $this->session->data[ 'user_token' ],
-                true ),
+                'text' => $this->language->get('text_extension'),
+                'href' => $this->url->link(
+                    'extension/extension',
+                    'user_token=' . $this->session->data['user_token'],
+                    true
+                ),
                 'separator' => ' :: '
             ),
             array(
-                'text' => $this->language->get( 'heading_title' ),
-                'href' => $this->url->link( 'extension/module/membership',
-                'user_token=' . $this->session->data[ 'user_token' ], true ),
+                'text' => $this->language->get('heading_title'),
+                'href' => $this->url->link(
+                    'extension/module/membership',
+                    'user_token=' . $this->session->data['user_token'],
+                    true
+                ),
                 'separator' => ' :: '
             )
         );
 
         // Buttons
-        $data[ 'action' ] = $this->url->link( 'extension/module/membership',
-        'user_token=' . $this->session->data[ 'user_token' ], true );
-        $data[ 'cancel' ] = $this->url->link( 'extension/module/membership',
-        'user_token=' . $this->session->data[ 'user_token' ], true );
+        $data['action'] = $this->url->link(
+            'extension/module/membership',
+            'user_token=' . $this->session->data['user_token'],
+            true
+        );
+        $data['cancel'] = $this->url->link(
+            'extension/module/membership',
+            'user_token=' . $this->session->data['user_token'],
+            true
+        );
 
         // Add Settings
-        $data = array_merge( $data, $this->model_setting_setting->getSetting( 'module_membership' ) );
+        $data = array_merge($data, $this->model_setting_setting->getSetting('module_membership'));
 
         // What to show
         //$do = ( !empty( $this->request->get[ 'do' ] ) && $this->request->get[ 'do' ] == 'fb_config' ) ? 'fb_config' : ( ( !empty( $this->request->get[ 'do' ] ) && $this->request->get[ 'do' ] == 'messages' ) ? 'messages' : 'settings' );
@@ -179,34 +196,34 @@ class ControllerExtensionModuleMembership extends Controller
         }
 
         // Show fb_config
-        if ( $do == 'fb_config' ) {
-            $data = $this->index_fb_config( $data );
+        if ($do == 'fb_config') {
+            $data = $this->index_fb_config($data);
         }
         // Show messages
-        else if ( $do == 'messages' ) {
-            $data = $this->index_fb_messages( $data );
+        else if ($do == 'messages') {
+            $data = $this->index_fb_messages($data);
         }
         // Show settings
-        else  {
-            $data = $this->index_settings( $data );
+        else {
+            $data = $this->index_settings($data);
         }
 
         // Settings Saved
-        if ( isset( $this->request->get ) && !empty( $this->request->get[ 'mm_action' ] ) == 'saved' ) {
-            $data[ 'mm_success_message' ] = $data[ 'mm_text_settings_saved' ];
+        if (isset($this->request->get) && !empty($this->request->get['mm_action']) == 'saved') {
+            $data['mm_success_message'] = $data['mm_text_settings_saved'];
         }
 
         // Error Message
-        if ( !empty( $this->error[ 'warning' ] ) ) {
-            $data[ 'mm_error_message' ] = $this->error[ 'warning' ];
+        if (!empty($this->error['warning'])) {
+            $data['mm_error_message'] = $this->error['warning'];
         }
 
-        $data[ 'header' ] = $this->load->controller( 'common/header' );
-        $data[ 'column_left' ] = $this->load->controller( 'common/column_left' );
-        $data[ 'footer' ] = $this->load->controller( 'common/footer' );
-        $data[ 'user_token' ] = $this->session->data[ 'user_token' ];
+        $data['header'] = $this->load->controller('common/header');
+        $data['column_left'] = $this->load->controller('common/column_left');
+        $data['footer'] = $this->load->controller('common/footer');
+        $data['user_token'] = $this->session->data['user_token'];
         // Display Page
-        $this->response->setOutput( $this->load->view( 'extension/module/membership', $data ) );
+        $this->response->setOutput($this->load->view('extension/module/membership', $data));
     }
 
     // Validation
@@ -283,7 +300,7 @@ class ControllerExtensionModuleMembership extends Controller
         $this->db->query($sql);
         $sql = "
         CREATE TABLE IF NOT EXISTS ext_customer_membership (
-            customer_membership_id INT PRIMARY KEY,
+            customer_membership_id INT PRIMARY KEY AUTO_INCREMENT,
             customer_id INT,
             membership_id INT,
             total_reward_points INT,
@@ -358,7 +375,7 @@ class ControllerExtensionModuleMembership extends Controller
         $this->response->setOutput(json_encode($json));
     }
 
-    public function send_notification($title, $body, $customer, $fb_config)
+    public function send_notification($title, $body, $customer, $fb_config, $membership_id, $new_pts)
     {
         $this->load->model('extension/module/membership');
 
@@ -395,6 +412,7 @@ class ControllerExtensionModuleMembership extends Controller
         if (isset($data['results'][0]['message_id'])) {
             $this->load->model('extension/module/membership');
             $this->model_extension_module_membership->addMessage($body);
+            $this->model_extension_module_membership->updateCustomerMembership($customer['customer_id'], $membership_id, $new_pts);
             $this->session->data['success'] = $this->language->get('text_success');
         } else {
             $this->session->data['error'] = $this->language->get('text_error');
@@ -415,89 +433,98 @@ class ControllerExtensionModuleMembership extends Controller
         $this->load->model('customer/customer');
 
         $fb_configuration = $this->model_extension_module_membership->getConfig();
-        if($newly_points > $fb_configuration['minimum_points']){// Minimum reward points to make this function continue processing
-        
-        $customer_info = $this->model_customer_customer->getCustomer($customer_id);
+        if ($newly_points > $fb_configuration['minimum_points']) { // Minimum reward points to make this function continue processing
 
-        $points_total = $this->model_extension_module_membership->sumRewardPointCustomer($customer_id);
-        $points_before_reward = $points_total - $newly_points;
+            $customer_info = $this->model_customer_customer->getCustomer($customer_id);
 
-        $memberships = $this->model_extension_module_membership->getMemberships(true);
-        $first_time_notification = $this->model_extension_module_membership->isFirstTimeReward($customer_id);
-        $promotion_membership = null;
-        $current_membership_info = null;
+            $points_total = $this->model_extension_module_membership->sumRewardPointCustomer($customer_id);
+            $points_before_reward = $points_total - $newly_points;
 
-        $customer_full_name = $customer_info['firstname'] . ' ' . $customer_info['lastname'];
+            $memberships = $this->model_extension_module_membership->getMemberships(true);
+            $first_time_notification = $this->model_extension_module_membership->isFirstTimeReward($customer_id);
+            $promotion_membership = null;
+            $current_membership_info = null;
 
-        if (!$first_time_notification && $points_total < $memberships[0]['amount']) { //For novice 
-            $this->send_notification(
-                'Membership Update',
-                sprintf(
-                    $fb_configuration['message_novice'],
-                    $customer_full_name,
-                    $newly_points,
-                    $points_total,
-                    $memberships[0]['name'],
-                    (int) $memberships[0]['amount'] - (int) $points_total
-                ),
-                $customer_info,
-                $fb_configuration
-            );
-            return [];
-        }
+            $customer_full_name = $customer_info['firstname'] . ' ' . $customer_info['lastname'];
 
-        for (
-            $i = count($memberships) - 1;
-            $i >= 0;
-            $i--
-        ) {
-            if ($points_total >= $memberships[$i]['amount']) {
-                $promotion_membership = $memberships[$i];
-                break;
+            if ($first_time_notification && $points_total < $memberships[0]['amount']) { //For novice 
+                $this->send_notification(
+                    'Membership Update',
+                    sprintf(
+                        $fb_configuration['message_novice'],
+                        $customer_full_name,
+                        $newly_points,
+                        $points_total,
+                        $memberships[0]['name'],
+                        (int) $memberships[0]['amount'] - (int) $points_total
+                    ),
+                    $customer_info,
+                    $fb_configuration,
+                    $membership[0]['id'],
+                    $newly_points
+                );
+                return [];
             }
-        }
 
-        for (
-            $i = count($memberships) - 1;
-            $i >= 0;
-            $i--
-        ) {
-            if ($points_before_reward >= $memberships[$i]['amount'] && (isset($memberships[$i + 1]) && $points_before_reward < $memberships[$i + 1]['amount'])) {
-                $current_membership_info = $memberships[$i];
-                break;
+            for (
+                $i = count($memberships) - 1;
+                $i >= 0;
+                $i--
+            ) {
+                if ($points_total >= $memberships[$i]['amount']) {
+                    $promotion_membership = $memberships[$i];
+                    break;
+                }
             }
-        }
 
-        if ($current_membership_info && $promotion_membership && $current_membership_info['name'] == $promotion_membership['name']) {
-            $date = $this->model_extension_module_membership->getLastReward($customer_id);
-            $this->send_notification(
-                'Keep your membership',
-                sprintf(
-                    $fb_configuration['message_keep'],
-                    $customer_full_name,
-                    $newly_points,
-                    $points_total,
-                    $fb_configuration['minimum_points'],
-                    date('d/m/Y', strtotime($date . ' + ' . $fb_configuration['expiration_duration']))
-                ),
-                $customer_info,
-                $fb_configuration
-            );
-            return [];
-        } elseif ($promotion_membership) {
-            $this->send_notification(
-                'Congratulations',
-                sprintf(
-                    $fb_configuration['message_promoted'],
-                    $customer_full_name,
-                    $promotion_membership['name']
-                ),
-                $customer_info,
-                $fb_configuration
-            );
+            for (
+                $i = count($memberships) - 1;
+                $i >= 0;
+                $i--
+            ) {
+                if ($points_before_reward >= $memberships[$i]['amount'] && (isset($memberships[$i + 1]) && $points_before_reward < $memberships[$i + 1]['amount'])) {
+                    $current_membership_info = $memberships[$i];
+                    break;
+                }
+            }
+
+            if ($current_membership_info && $promotion_membership && $current_membership_info['name'] == $promotion_membership['name']) {
+                $date = $this->model_extension_module_membership->getLastReward($customer_id);
+                $this->send_notification(
+                    'Keep your membership',
+                    sprintf(
+                        $fb_configuration['message_keep'],
+                        $customer_full_name,
+                        $newly_points,
+                        $points_total,
+                        $fb_configuration['minimum_points'],
+                        date('d/m/Y', strtotime($date . ' + ' . $fb_configuration['expiration_duration']))
+                    ),
+                    $customer_info,
+                    $fb_configuration,
+                    $current_membership_info['id'],
+                    $newly_points
+                );
+                return [];
+            } elseif ($promotion_membership) {
+                $this->send_notification(
+                    'Congratulations',
+                    sprintf(
+                        $fb_configuration['message_promoted'],
+                        $customer_full_name,
+                        $promotion_membership['name']
+                    ),
+                    $customer_info,
+                    $fb_configuration,
+                    $promotion_membership['id'],
+                    $newly_points
+                );
+                return [];
+            }
             return [];
         }
         return [];
     }
-    }
+
+    
 }

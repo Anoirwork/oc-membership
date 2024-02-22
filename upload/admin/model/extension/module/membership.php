@@ -66,9 +66,26 @@ class ModelExtensionModuleMembership extends Model {
     }
 
     public function getCustomerMemberships($customer_id) {
-        $query = $this->db->query("SELECT (SELECT name FROM " . DB_PREFIX . "membership WHERE mm.membership_id = id ) AS membership_name, total_reward_points, updated_at FROM ext_customer_membership mm WHERE customer_id = " . $customer_id );
+        $query = $this->db->query("SELECT
+            (SELECT name FROM och6_membership mm WHERE mm.id = ext.id ORDER BY mm.id ASC LIMIT 1) AS current_mm,
+            (SELECT amount FROM och6_membership mm WHERE mm.id = ext.id ORDER BY mm.id ASC LIMIT 2) AS next_mm_pts, 
+        total_reward_points, updated_at FROM ext_customer_membership ext WHERE customer_id =" . $customer_id );
         
-        return $query->rows;
+        return $query->row;
+    }
+
+    public function updateCustomerMembership($customer_id, $membership_id, $newly_points) {
+        if(!$this->isFirstTimeReward($customer_id)) {
+            $this->db->query("UPDATE ext_customer_membership SET membership_id = '" . $this->db->escape( $membership_id ) . "',  total_reward_points = total_reward_points + '" . $this->db->escape( $newly_points ) . "', updated_at = NOW() WHERE customer_id = ".$customer_id);
+        }else{
+            $this->db->query("INSERT INTO ext_customer_membership (customer_id, membership_id, total_reward_points, created_at, updated_at) VALUES ('" . $customer_id . "', '" . $membership_id . "', '" . $newly_points . "', NOW(), NOW() )");
+        }
+        return $this->db->getLastId();
+    }
+
+    public function deleteCustomerMembership($customer_id, $newly_points) {
+        $this->db->query("UPDATE ext_customer_membership SET total_reward_points = total_reward_points - '" . $this->db->escape( $newly_points ) . "', updated_at = NOW() WHERE customer_id = ".$customer_id);
+        return $this->db->getLastId();
     }
 
     public function getLastReward($customer_id) {
